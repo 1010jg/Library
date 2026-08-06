@@ -32,7 +32,6 @@ const createBook = async (req, res) => {
     }
 
     const book = await Book.create({
-      title,
       author,
       description,
       category,
