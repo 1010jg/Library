@@ -1,9 +1,8 @@
 import axios from "axios";
 
-// เรียก API ผ่าน path "/api" ซึ่ง Vite dev server จะ proxy ไปยัง
-// Node.js/Express backend ที่ http://localhost:4000 (ดู vite.config.js)
+// เรียก API ผ่าน path ที่กำหนดไว้ใน .env (ค่าเริ่มต้นคือ "/api" ซึ่ง Vite จะ proxy ไปยัง Backend)
 const http = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
   headers: { "Content-Type": "application/json" }
 });
 

@@ -6,6 +6,12 @@ frontend/dist/
 backend/node_modules/
 backend/data/db.json
 
+# Environment Variables
+.env
+.env.local
+*.env
+!*.env.example
+
 # General
 .DS_Store
 *.log

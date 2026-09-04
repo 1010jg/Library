@@ -11,6 +11,8 @@
 จะถูกส่งเป็น **API Requests** จาก Frontend ไปประมวลผลและบันทึกที่ Backend
 (เก็บลงไฟล์ `backend/data/db.json` แทนการใช้ `localStorage` ของเบราว์เซอร์แบบเดิม)
 
+> 📘 **สำหรับคู่มือการใช้งาน, จุดประสงค์ระบบ และเวิร์กโฟลว์:** ดูได้ที่ [README_2.md](file:///d:/1Project/Library/README_2.md)
+
 ## โครงสร้างโปรเจกต์
 
 ```
@@ -34,12 +36,20 @@ library-project/
 │   ├── package.json
 │   └── package-lock.json
 │
-├── backend/                    # Node.js + Express API server
+├── backend/                    # Node.js + Express API server (Modular Architecture)
+│   ├── config/                 # การตั้งค่าระบบ (เช่น การเชื่อมต่อ Mongoose)
+│   ├── controllers/            # ตัวประมวลผลคำขอ (Auth, Books, Members, Borrows, etc.)
+│   ├── middleware/             # Middleware (JWT verification, Role guards)
+│   ├── routes/                 # เส้นทาง REST API ย่อยและตัวรวมเส้นทาง
+│   ├── utils/                  # ฟังก์ชันตัวช่วย (helpers เช่น format วันที่, รหัส ID)
 │   ├── data/
 │   │   ├── defaultData.js      # ข้อมูลเริ่มต้น (seed data)
 │   │   └── db.json             # ไฟล์ฐานข้อมูล (สร้างอัตโนมัติตอนรันครั้งแรก)
-│   ├── db.js                   # ตัวช่วยอ่าน/เขียนฐานข้อมูล
-│   ├── server.js                # Express server + REST API routes
+│   ├── db.js                   # ตัวช่วยอ่าน/เขียนฐานข้อมูล JSON
+│   ├── app.js                  # กำหนดค่า Express middleware และ mount routes
+│   ├── server.js               # Entry point สำหรับเปิดพอร์ตเริ่มทำงาน
+│   ├── .env                    # ตัวแปรสภาพแวดล้อม (JWT_SECRET, MONGODB_URI ฯลฯ)
+│   ├── .env.example
 │   ├── package.json
 │   └── package-lock.json
 │

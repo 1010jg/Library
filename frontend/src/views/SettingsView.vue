@@ -25,9 +25,7 @@ import { LIBRARY_ROLES } from "../constants/roles";
 const store = useLibraryStore();
 
 onMounted(async () => {
-  if (store.isAdmin) {
-    await store.fetchStaff();
-  }
+  await store.fetchStaff();
 });
 
 // Profile Form
@@ -87,13 +85,13 @@ const filteredStaff = computed(() => {
   );
 });
 
-// Profile save (Librarian can only edit their own name, Admin can edit name & role)
+// Profile save (สามารถเปลี่ยนชื่อและตำแหน่ง/สิทธิ์การใช้งานได้)
 async function saveProfile() {
   await store.updateProfile({
     name: profileForm.value.name.trim(),
-    role: store.isAdmin ? profileForm.value.role : store.currentUser.role
+    role: profileForm.value.role
   });
-  alert("บันทึกข้อมูลส่วนตัวเรียบร้อยแล้ว!");
+  alert("บันทึกข้อมูลส่วนตัวและสิทธิ์การใช้งานเรียบร้อยแล้ว!");
 }
 
 // Policy save (Admin only)
@@ -249,25 +247,18 @@ async function resetSystemToDefault() {
 
             <div class="sm:col-span-2">
               <label class="block text-xs font-medium text-gray-700 mb-1">
-                ตำแหน่ง / สิทธิ์การใช้งาน
-                <span v-if="!store.isAdmin" class="text-gray-400 font-normal ml-1">(บรรณารักษ์ไม่สามารถเปลี่ยนสิทธิ์เองได้)</span>
+                ตำแหน่ง / สิทธิ์การใช้งาน <span class="text-red-500">*</span>
               </label>
-
-              <!-- For Admin: can change own role -->
               <select
-                v-if="store.isAdmin"
                 v-model="profileForm.role"
                 required
-                class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none"
+                class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none text-gray-800 font-medium"
               >
                 <option v-for="r in LIBRARY_ROLES" :key="r" :value="r">{{ r }}</option>
               </select>
-
-              <!-- For Librarian: read-only -->
-              <div v-else class="flex items-center justify-between px-3 py-2 bg-gray-100 border border-gray-200 rounded-xl text-xs text-gray-600">
-                <span class="font-medium text-blue-700">{{ profileForm.role }}</span>
-                <span class="text-[11px] text-gray-400">ติดต่อผู้ดูแลระบบเพื่อขอปรับเปลี่ยนสิทธิ์</span>
-              </div>
+              <p class="text-[11px] text-gray-400 mt-1">
+                เลือกเปลี่ยนระหว่าง "ผู้ดูแลระบบ" (จัดการได้ทุกอย่างรวมถึงบุคลากรและนโยบาย) หรือ "บรรณารักษ์" (จัดการงานห้องสมุดทั่วไป)
+              </p>
             </div>
           </div>
 
@@ -549,16 +540,15 @@ async function resetSystemToDefault() {
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">ตำแหน่ง / สิทธิ์การใช้งาน</label>
-            <div
-              class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold"
-              :class="staffForm.role === 'ผู้ดูแลระบบ' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-blue-50 text-blue-700 border border-blue-200'"
+            <label class="block text-xs font-medium text-gray-700 mb-1">ตำแหน่ง / สิทธิ์การใช้งาน <span class="text-red-500">*</span></label>
+            <select
+              v-model="staffForm.role"
+              required
+              class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-purple-600 focus:outline-none text-gray-800 font-medium"
             >
-              <span>{{ staffForm.role === 'ผู้ดูแลระบบ' ? 'ผู้ดูแลระบบ (บัญชีหลัก)' : 'บรรณารักษ์ (Librarian)' }}</span>
-              <span class="text-[10px] font-normal text-gray-500">
-                {{ staffForm.role === 'ผู้ดูแลระบบ' ? 'มีเพียง 1 บัญชี' : 'สิทธิ์บรรณารักษ์' }}
-              </span>
-            </div>
+              <option v-for="r in LIBRARY_ROLES" :key="r" :value="r">{{ r }}</option>
+            </select>
+            <p class="text-[10px] text-gray-400 mt-1">กำหนดสิทธิ์เป็น "ผู้ดูแลระบบ" หรือ "บรรณารักษ์"</p>
           </div>
 
           <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
