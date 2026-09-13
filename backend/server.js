@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const app = require("./app");
 const { connectDB } = require("./config/mongoose");
 const { seedDatabase } = require("./config/seed");
@@ -10,13 +11,13 @@ async function startServer() {
     // 1. เชื่อมต่อ MongoDB
     await connectDB();
 
-    // 2. นำเข้าข้อมูลเริ่มต้นสู่ MongoDB (หากยังไม่มีข้อมูล)
+    // 2. นำเข้าข้อมูลเริ่มต้นสู่ MongoDB หากยังไม่มีข้อมูล
     await seedDatabase();
 
     // 3. เริ่มต้น Express Server
-    app.listen(PORT, () => {
-      console.log(`📚 Library backend API running at http://localhost:${PORT}`);
-      console.log(`🍃 Connected to MongoDB and ready for MongoDB Compass!`);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`📚 Library backend API running on port ${PORT}`);
+      console.log(`🍃 Connected to MongoDB`);
     });
   } catch (err) {
     console.error("❌ Failed to start server:", err);

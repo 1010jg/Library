@@ -9,7 +9,7 @@
 
 ข้อมูลทั้งหมด (หนังสือ, สมาชิก, รายการยืม-คืน, ค่าปรับ, ผู้ใช้งาน, นโยบายห้องสมุด)
 จะถูกส่งเป็น **API Requests** จาก Frontend ไปประมวลผลและบันทึกที่ Backend
-(เก็บลงไฟล์ `backend/data/db.json` แทนการใช้ `localStorage` ของเบราว์เซอร์แบบเดิม)
+(จัดเก็บลงฐานข้อมูล **MongoDB** ผ่าน **Mongoose ORM** แทนการใช้ `localStorage` ของเบราว์เซอร์แบบเดิม)
 
 > 📘 **สำหรับคู่มือการใช้งาน, จุดประสงค์ระบบ และเวิร์กโฟลว์:** ดูได้ที่ [README_2.md](file:///d:/1Project/Library/README_2.md)
 
@@ -37,15 +37,14 @@ library-project/
 │   └── package-lock.json
 │
 ├── backend/                    # Node.js + Express API server (Modular Architecture)
-│   ├── config/                 # การตั้งค่าระบบ (เช่น การเชื่อมต่อ Mongoose)
+│   ├── config/                 # การตั้งค่าระบบ (Mongoose connection, Database seeder)
 │   ├── controllers/            # ตัวประมวลผลคำขอ (Auth, Books, Members, Borrows, etc.)
 │   ├── middleware/             # Middleware (JWT verification, Role guards)
+│   ├── models/                 # Mongoose Schemas & Models (Book, Member, Staff, Borrow, etc.)
 │   ├── routes/                 # เส้นทาง REST API ย่อยและตัวรวมเส้นทาง
 │   ├── utils/                  # ฟังก์ชันตัวช่วย (helpers เช่น format วันที่, รหัส ID)
 │   ├── data/
-│   │   ├── defaultData.js      # ข้อมูลเริ่มต้น (seed data)
-│   │   └── db.json             # ไฟล์ฐานข้อมูล (สร้างอัตโนมัติตอนรันครั้งแรก)
-│   ├── db.js                   # ตัวช่วยอ่าน/เขียนฐานข้อมูล JSON
+│   │   └── defaultData.js      # ข้อมูลเริ่มต้น (seed data เข้า MongoDB)
 │   ├── app.js                  # กำหนดค่า Express middleware และ mount routes
 │   ├── server.js               # Entry point สำหรับเปิดพอร์ตเริ่มทำงาน
 │   ├── .env                    # ตัวแปรสภาพแวดล้อม (JWT_SECRET, MONGODB_URI ฯลฯ)
@@ -120,9 +119,7 @@ npm run preview    # ดูตัวอย่างไฟล์ build
 
 ## หมายเหตุ
 
-- ฐานข้อมูลฝั่งเซิร์ฟเวอร์ในตัวอย่างนี้ใช้ไฟล์ JSON (`backend/data/db.json`)
-  เพื่อความง่ายในการรันสาธิต หากต้องการใช้งานจริงสามารถเปลี่ยนไปใช้ฐานข้อมูล
-  เช่น MongoDB, PostgreSQL หรือ MySQL ได้โดยแก้เฉพาะไฟล์ `backend/db.js`
-  และ `backend/server.js` โดยไม่ต้องแก้ฝั่ง Frontend
+- ฐานข้อมูลฝั่งเซิร์ฟเวอร์เชื่อมต่อไปยัง **MongoDB** (โดยค่าเริ่มต้นใช้ `mongodb://127.0.0.1:27017/library_db` หรือกำหนดผ่าน `MONGODB_URI` ใน `.env`)
+- เมื่อเริ่มต้นเซิร์ฟเวอร์ครั้งแรก ระบบจะ Seed ข้อมูลเริ่มต้นจาก `backend/data/defaultData.js` เข้า MongoDB ให้โดยอัตโนมัติ
 - ระบบยืนยันตัวตนเป็นแบบง่าย (single-session, ไม่มีรหัสผ่าน) ตามพฤติกรรมเดิม
   ของไฟล์ HTML ต้นฉบับที่ใช้ `localStorage` เก็บผู้ใช้ปัจจุบันเพียงคนเดียว
