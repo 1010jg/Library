@@ -1,18 +1,37 @@
+
 const mongoose = require("mongoose");
 
 /**
- * เชื่อมต่อกับ MongoDB ผ่าน Mongoose โดยดึง URI จาก process.env.MONGODB_URI
+ * เชื่อมต่อ MongoDB ผ่าน Mongoose
+ * โดยดึง URI จาก process.env.MONGODB_URI
  */
 async function connectDB() {
-  const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/library_db";
+  const uri = process.env.MONGODB_URI;
+
+  // ตรวจสอบว่ามี MONGODB_URI หรือไม่
+  if (!uri) {
+    throw new Error("MONGODB_URI is not configured");
+  }
+
   try {
-    const conn = await mongoose.connect(uri);
-    console.log(`🍃 Connected to MongoDB via Mongoose: ${conn.connection.host}`);
+    const conn = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 15000,
+    });
+
+    console.log(
+      `🍃 Connected to MongoDB via Mongoose: ${conn.connection.host}`
+    );
+
     return conn;
+
   } catch (error) {
-    console.warn(`⚠️ MongoDB connection warning: ${error.message}`);
-    console.warn(`   (ระบบยังสามารถทำงานต่อเนื่องได้)`);
-    return null;
+    console.error(
+      "❌ MongoDB connection failed:",
+      error.message
+    );
+
+    // หยุดการเริ่มต้นระบบเมื่อเชื่อมต่อฐานข้อมูลไม่ได้
+    throw error;
   }
 }
 
